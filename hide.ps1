@@ -1,44 +1,35 @@
 # ============================================================
-# SHANECODES REPAIR TOOL - NEON EDITION v11.3
+# SHANECODES – SYSTEM REPAIR TOOL v12.0
 # ============================================================
 # Author: Shane Nichael Obinguar (ShaneCodes)
 # Support: https://www.facebook.com/Shxne.Nichael
+# ============================================================
+# Compatible with Windows PowerShell 5.1+
+# Public Repository Edition – No Token Required
 # ============================================================
 
 # ============================================================
 # CONFIGURATION
 # ============================================================
-$script:GITHUB_RAW = "https://raw.githubusercontent.com/shanecodes-glitch/ShaneCodes-System-Repair/main/tisting.bat"
-$script:VERSION = "11.3"
-$script:AUTHOR = "Shane Nichael Obinguar"
-$script:CONTACT = "https://www.facebook.com/Shxne.Nichael"
-$script:COPYRIGHT = "(c) 2024 ShaneCodes Technologies. All rights reserved."
+$script:Version = "12.0"
+$script:Author = "Shane Nichael Obinguar"
+$script:Company = "ShaneCodes Technologies"
+$script:Contact = "https://www.facebook.com/Shxne.Nichael"
+$script:Copyright = "© 2024 ShaneCodes Technologies. All rights reserved."
+$script:GitHubRaw = "https://raw.githubusercontent.com/shanecodes-glitch/ShaneCodes-System-Repair/main/tisting.bat"
 
 # ============================================================
-# ERROR CODE REFERENCE
-# ============================================================
-# SC-ERR-001: Failed to load required assemblies
-# SC-ERR-002: Failed to download repair modules
-# SC-ERR-003: Failed to create temporary file
-# SC-ERR-004: Repair process timed out
-# SC-ERR-005: Repair process exited with error
-# SC-ERR-006: Failed to clean up temporary files
-# ============================================================
-
-# ============================================================
-# LOAD ASSEMBLIES
+# LOAD ASSEMBLIES (PowerShell 5.1 Compatible)
 # ============================================================
 try {
     Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
     Add-Type -AssemblyName System.Drawing -ErrorAction Stop
 } catch {
-    try {
-        [System.Reflection.Assembly]::Load("System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089") | Out-Null
-        [System.Reflection.Assembly]::Load("System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") | Out-Null
-    } catch {
-        Show-ErrorDialog -ErrorCode "SC-ERR-001" -Message "Failed to load required assemblies. Please ensure Windows is up to date." -Details $_.Exception.Message
-        exit
-    }
+    Write-Host "`n[ERROR] Failed to load required assemblies." -ForegroundColor Red
+    Write-Host "Please ensure .NET Framework 4.5+ is installed." -ForegroundColor Yellow
+    Write-Host "Contact: $script:Contact" -ForegroundColor Cyan
+    Read-Host "`nPress Enter to exit"
+    exit 1
 }
 
 [System.Windows.Forms.Application]::EnableVisualStyles()
@@ -57,112 +48,8 @@ public class ConsoleManager {
 }
 "@
 
-$script:CONSOLE_HANDLE = [ConsoleManager]::GetConsoleWindow()
-[ConsoleManager]::ShowWindow($script:CONSOLE_HANDLE, 0)
-
-# ============================================================
-# ERROR HANDLING
-# ============================================================
-function Show-ErrorDialog {
-    param(
-        [string]$ErrorCode,
-        [string]$Message,
-        [string]$Details = ""
-    )
-    
-    try {
-        $form = New-Object System.Windows.Forms.Form
-        $form.Text = "ShaneCodes - Error $ErrorCode"
-        $form.Size = New-Object System.Drawing.Size(520, 320)
-        $form.StartPosition = "CenterScreen"
-        $form.FormBorderStyle = "FixedSingle"
-        $form.MaximizeBox = $false
-        $form.MinimizeBox = $false
-        $form.BackColor = [System.Drawing.Color]::FromArgb(10, 12, 30)
-        $form.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
-        $form.TopMost = $true
-
-        $header = New-Object System.Windows.Forms.Panel
-        $header.Dock = "Top"
-        $header.Height = 55
-        $header.BackColor = [System.Drawing.Color]::FromArgb(180, 40, 40)
-        $form.Controls.Add($header)
-
-        $title = New-Object System.Windows.Forms.Label
-        $title.Text = "SHANECODES"
-        $title.Font = New-Object System.Drawing.Font("Segoe UI", 18, [System.Drawing.FontStyle]::Bold)
-        $title.ForeColor = [System.Drawing.Color]::White
-        $title.Location = New-Object System.Drawing.Point(15, 10)
-        $title.AutoSize = $true
-        $header.Controls.Add($title)
-
-        $subHead = New-Object System.Windows.Forms.Label
-        $subHead.Text = "Error Code: $ErrorCode"
-        $subHead.Font = New-Object System.Drawing.Font("Segoe UI", 9)
-        $subHead.ForeColor = [System.Drawing.Color]::FromArgb(200, 220, 255)
-        $subHead.Location = New-Object System.Drawing.Point(17, 33)
-        $subHead.AutoSize = $true
-        $header.Controls.Add($subHead)
-
-        $iconLabel = New-Object System.Windows.Forms.Label
-        $iconLabel.Text = "[X]"
-        $iconLabel.Font = New-Object System.Drawing.Font("Segoe UI", 36, [System.Drawing.FontStyle]::Bold)
-        $iconLabel.ForeColor = [System.Drawing.Color]::FromArgb(255, 100, 100)
-        $iconLabel.Location = New-Object System.Drawing.Point(30, 85)
-        $iconLabel.Size = New-Object System.Drawing.Size(80, 70)
-        $iconLabel.TextAlign = "MiddleCenter"
-        $form.Controls.Add($iconLabel)
-
-        $msg = New-Object System.Windows.Forms.Label
-        $msg.Text = $Message
-        $msg.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
-        $msg.ForeColor = [System.Drawing.Color]::White
-        $msg.Location = New-Object System.Drawing.Point(120, 85)
-        $msg.Size = New-Object System.Drawing.Size(370, 60)
-        $form.Controls.Add($msg)
-
-        if ($Details) {
-            $detailsLabel = New-Object System.Windows.Forms.Label
-            $detailsLabel.Text = "Details: $Details"
-            $detailsLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9)
-            $detailsLabel.ForeColor = [System.Drawing.Color]::FromArgb(180, 180, 220)
-            $detailsLabel.Location = New-Object System.Drawing.Point(30, 155)
-            $detailsLabel.Size = New-Object System.Drawing.Size(460, 40)
-            $detailsLabel.TextAlign = "MiddleCenter"
-            $form.Controls.Add($detailsLabel)
-        }
-
-        $footerText = New-Object System.Windows.Forms.Label
-        $footerText.Text = "If this error persists, contact ShaneCodes Support:`n$script:CONTACT"
-        $footerText.Font = New-Object System.Drawing.Font("Segoe UI", 9)
-        $footerText.ForeColor = [System.Drawing.Color]::FromArgb(120, 140, 180)
-        $footerText.Location = New-Object System.Drawing.Point(30, 200)
-        $footerText.Size = New-Object System.Drawing.Size(460, 40)
-        $footerText.TextAlign = "MiddleCenter"
-        $form.Controls.Add($footerText)
-
-        $btn = New-Object System.Windows.Forms.Button
-        $btn.Text = "[OK] CLOSE"
-        $btn.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
-        $btn.Size = New-Object System.Drawing.Size(140, 42)
-        $btn.Location = New-Object System.Drawing.Point(190, 250)
-        $btn.BackColor = [System.Drawing.Color]::FromArgb(0, 200, 150)
-        $btn.ForeColor = [System.Drawing.Color]::FromArgb(0, 0, 0)
-        $btn.FlatStyle = "Flat"
-        $btn.Cursor = [System.Windows.Forms.Cursors]::Hand
-        $btn.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 255, 200) })
-        $btn.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 200, 150) })
-        $btn.Add_Click({ $form.Close() })
-        $form.Controls.Add($btn)
-
-        $form.ShowDialog()
-    } catch {
-        Write-Host "[ERROR $ErrorCode] $Message" -ForegroundColor Red
-        Write-Host "Contact: $script:CONTACT" -ForegroundColor Cyan
-        Read-Host "Press Enter to exit"
-    }
-    exit
-}
+$script:ConsoleHandle = [ConsoleManager]::GetConsoleWindow()
+[ConsoleManager]::ShowWindow($script:ConsoleHandle, 0)
 
 # ============================================================
 # ADMIN CHECK
@@ -189,7 +76,7 @@ function Get-SystemInfo {
         $info.Build = $os.BuildNumber
         $info.Arch = $cs.SystemType
         $info.RAM = [math]::Round($cs.TotalPhysicalMemory / 1GB, 2)
-        $info.CPU = $cpu.Name
+        $info.CPU = $cpu.Name -replace '\(TM\)', '™' -replace '\(R\)', '®'
         $info.User = $env:USERNAME
         $info.Computer = $env:COMPUTERNAME
     } catch {
@@ -205,14 +92,131 @@ function Get-SystemInfo {
 }
 
 # ============================================================
-# DOWNLOAD FUNCTION (No Token)
+# SHOW MESSAGE BOX
 # ============================================================
-function Invoke-Download {
+function Show-MessageBox {
+    param($Message, $Title = "ShaneCodes", $Icon = "Information")
+    try {
+        $iconMap = @{
+            "Information" = [System.Windows.Forms.MessageBoxIcon]::Information
+            "Warning"     = [System.Windows.Forms.MessageBoxIcon]::Warning
+            "Error"       = [System.Windows.Forms.MessageBoxIcon]::Error
+            "Question"    = [System.Windows.Forms.MessageBoxIcon]::Question
+        }
+        return [System.Windows.Forms.MessageBox]::Show($Message, $Title, "OK", $iconMap[$Icon])
+    } catch {
+        Write-Host "[$Title] $Message" -ForegroundColor Cyan
+        return "OK"
+    }
+}
+
+# ============================================================
+# CONTACT SUPPORT DIALOG
+# ============================================================
+function Show-ContactSupportDialog {
+    try {
+        $form = New-Object System.Windows.Forms.Form
+        $form.Text = "ShaneCodes – Support"
+        $form.Size = New-Object System.Drawing.Size(520, 320)
+        $form.StartPosition = "CenterScreen"
+        $form.FormBorderStyle = "FixedSingle"
+        $form.MaximizeBox = $false
+        $form.MinimizeBox = $false
+        $form.BackColor = [System.Drawing.Color]::FromArgb(15, 18, 35)
+        $form.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+
+        $header = New-Object System.Windows.Forms.Panel
+        $header.Dock = "Top"
+        $header.Height = 55
+        $header.BackColor = [System.Drawing.Color]::FromArgb(0, 80, 170)
+        $form.Controls.Add($header)
+
+        $title = New-Object System.Windows.Forms.Label
+        $title.Text = "SHANECODES"
+        $title.Font = New-Object System.Drawing.Font("Segoe UI", 22, [System.Drawing.FontStyle]::Bold)
+        $title.ForeColor = [System.Drawing.Color]::White
+        $title.Location = New-Object System.Drawing.Point(20, 8)
+        $title.AutoSize = $true
+        $header.Controls.Add($title)
+
+        $subHead = New-Object System.Windows.Forms.Label
+        $subHead.Text = "Support Center"
+        $subHead.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+        $subHead.ForeColor = [System.Drawing.Color]::FromArgb(200, 220, 255)
+        $subHead.Location = New-Object System.Drawing.Point(22, 34)
+        $subHead.AutoSize = $true
+        $header.Controls.Add($subHead)
+
+        $iconLabel = New-Object System.Windows.Forms.Label
+        $iconLabel.Text = "◆"
+        $iconLabel.Font = New-Object System.Drawing.Font("Segoe UI", 40)
+        $iconLabel.ForeColor = [System.Drawing.Color]::FromArgb(0, 220, 200)
+        $iconLabel.Location = New-Object System.Drawing.Point(30, 85)
+        $iconLabel.Size = New-Object System.Drawing.Size(80, 70)
+        $iconLabel.TextAlign = "MiddleCenter"
+        $form.Controls.Add($iconLabel)
+
+        $msg = New-Object System.Windows.Forms.Label
+        $msg.Text = "Contact Support"
+        $msg.Font = New-Object System.Drawing.Font("Segoe UI", 16, [System.Drawing.FontStyle]::Bold)
+        $msg.ForeColor = [System.Drawing.Color]::White
+        $msg.Location = New-Object System.Drawing.Point(125, 90)
+        $msg.AutoSize = $true
+        $form.Controls.Add($msg)
+
+        $sub = New-Object System.Windows.Forms.Label
+        $sub.Text = "For assistance, please contact us at:"
+        $sub.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+        $sub.ForeColor = [System.Drawing.Color]::FromArgb(180, 200, 230)
+        $sub.Location = New-Object System.Drawing.Point(125, 120)
+        $sub.AutoSize = $true
+        $form.Controls.Add($sub)
+
+        $contactPanel = New-Object System.Windows.Forms.Panel
+        $contactPanel.Location = New-Object System.Drawing.Point(30, 170)
+        $contactPanel.Size = New-Object System.Drawing.Size(460, 65)
+        $contactPanel.BackColor = [System.Drawing.Color]::FromArgb(25, 30, 50)
+        $contactPanel.BorderStyle = "FixedSingle"
+        $form.Controls.Add($contactPanel)
+
+        $contactLabel = New-Object System.Windows.Forms.Label
+        $contactLabel.Text = "📧 $script:Contact`n🌐 $($script:Company)"
+        $contactLabel.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+        $contactLabel.ForeColor = [System.Drawing.Color]::FromArgb(0, 220, 200)
+        $contactLabel.Location = New-Object System.Drawing.Point(15, 6)
+        $contactLabel.Size = New-Object System.Drawing.Size(430, 52)
+        $contactLabel.TextAlign = "MiddleCenter"
+        $contactPanel.Controls.Add($contactLabel)
+
+        $btn = New-Object System.Windows.Forms.Button
+        $btn.Text = "✓ Thank You"
+        $btn.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+        $btn.Size = New-Object System.Drawing.Size(140, 42)
+        $btn.Location = New-Object System.Drawing.Point(190, 255)
+        $btn.BackColor = [System.Drawing.Color]::FromArgb(0, 180, 100)
+        $btn.ForeColor = [System.Drawing.Color]::White
+        $btn.FlatStyle = "Flat"
+        $btn.Cursor = [System.Windows.Forms.Cursors]::Hand
+        $btn.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 210, 120) })
+        $btn.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 180, 100) })
+        $btn.Add_Click({ $form.Close() })
+        $form.Controls.Add($btn)
+
+        $form.ShowDialog()
+    } catch {
+        Show-MessageBox "Contact: $script:Contact" "Support" "Information"
+    }
+}
+
+# ============================================================
+# DOWNLOAD FROM GITHUB (Public Repo – No Token)
+# ============================================================
+function Download-RepairTool {
     param([string]$Url, [string]$OutputPath)
     
     try {
         $webClient = New-Object System.Net.WebClient
-        $webClient.Headers.Add("User-Agent", "ShaneCodes-Repair/$($script:VERSION)")
+        $webClient.Headers.Add("User-Agent", "ShaneCodes-Repair/$($script:Version)")
         $webClient.DownloadFile($Url, $OutputPath)
         
         if (Test-Path $OutputPath) {
@@ -226,169 +230,179 @@ function Invoke-Download {
 }
 
 # ============================================================
-# DELETE FILE (ZERO TRACE)
+# DELETE BATCH FILE (ZERO TRACE)
 # ============================================================
-function Remove-BatchFile {
+function Delete-BatchFile {
     param([string]$Path)
     try {
         if (Test-Path $Path) {
             Remove-Item -Path $Path -Force -ErrorAction SilentlyContinue
             if (Test-Path $Path) {
-                $cmd = "Start-Sleep -Seconds 1; Remove-Item -Path '$Path' -Force -ErrorAction SilentlyContinue"
-                Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -WindowStyle Hidden -Command `"$cmd`"" -WindowStyle Hidden
+                $deleteCmd = "Start-Sleep -Seconds 1; Remove-Item -Path '$Path' -Force -ErrorAction SilentlyContinue"
+                Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -WindowStyle Hidden -Command `"$deleteCmd`"" -WindowStyle Hidden
             }
         }
     } catch {}
 }
 
 # ============================================================
-# SHOW MESSAGE BOX
+# PROGRESS WINDOW (Optimized for PowerShell 5.1)
 # ============================================================
-function Show-MessageBox {
-    param($Message, $Title = "ShaneCodes", $Icon = "Information")
-    try {
-        $iconMap = @{
-            "Information" = [System.Windows.Forms.MessageBoxIcon]::Information
-            "Warning"     = [System.Windows.Forms.MessageBoxIcon]::Warning
-            "Error"       = [System.Windows.Forms.MessageBoxIcon]::Error
-            "Question"    = [System.Windows.Forms.MessageBoxIcon]::Question
-        }
-        return [System.Windows.Forms.MessageBox]::Show($Message, $Title, "YesNo", $iconMap[$Icon])
-    } catch {
-        Write-Host "[$Title] $Message" -ForegroundColor Cyan
-        return "Yes"
-    }
-}
-
-# ============================================================
-# REPAIR ENGINE (RUNS IN BACKGROUND WITH TIMEOUT)
-# ============================================================
-function Start-RepairBackground {
-    param(
-        [string]$TempBat,
-        [System.Windows.Forms.Form]$Form,
-        [System.Windows.Forms.ProgressBar]$ProgressBar,
-        [System.Windows.Forms.Label]$PercentLabel,
-        [System.Windows.Forms.Label]$StatusLabel,
-        [System.Windows.Forms.Label]$ProgressLabel,
-        [System.Windows.Forms.Button]$BtnStart,
-        [System.Windows.Forms.Button]$BtnSupport,
-        [System.Windows.Forms.Button]$BtnExit
-    )
+function Show-ProgressWindow {
+    param($Process, $BatchPath)
     
     try {
-        Update-UI -Form $Form -ProgressBar $ProgressBar -PercentLabel $PercentLabel -StatusLabel $StatusLabel -ProgressLabel $ProgressLabel -Percent 10 -Status "Downloading repair modules..."
+        $form = New-Object System.Windows.Forms.Form
+        $form.Text = "ShaneCodes – System Repair v$script:Version"
+        $form.Size = New-Object System.Drawing.Size(520, 280)
+        $form.StartPosition = "CenterScreen"
+        $form.FormBorderStyle = "FixedSingle"
+        $form.MaximizeBox = $false
+        $form.MinimizeBox = $false
+        $form.BackColor = [System.Drawing.Color]::FromArgb(15, 18, 35)
+        $form.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+        $form.TopMost = $true
+
+        $header = New-Object System.Windows.Forms.Panel
+        $header.Dock = "Top"
+        $header.Height = 50
+        $header.BackColor = [System.Drawing.Color]::FromArgb(0, 80, 170)
+        $form.Controls.Add($header)
+
+        $title = New-Object System.Windows.Forms.Label
+        $title.Text = "SHANECODES"
+        $title.Font = New-Object System.Drawing.Font("Segoe UI", 18, [System.Drawing.FontStyle]::Bold)
+        $title.ForeColor = [System.Drawing.Color]::White
+        $title.Location = New-Object System.Drawing.Point(15, 8)
+        $title.AutoSize = $true
+        $header.Controls.Add($title)
+
+        $subHead = New-Object System.Windows.Forms.Label
+        $subHead.Text = "System Repair in Progress"
+        $subHead.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+        $subHead.ForeColor = [System.Drawing.Color]::FromArgb(200, 220, 255)
+        $subHead.Location = New-Object System.Drawing.Point(17, 30)
+        $subHead.AutoSize = $true
+        $header.Controls.Add($subHead)
+
+        $statusLabel = New-Object System.Windows.Forms.Label
+        $statusLabel.Text = "● PROCESSING..."
+        $statusLabel.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+        $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(255, 200, 50)
+        $statusLabel.Location = New-Object System.Drawing.Point(20, 75)
+        $statusLabel.AutoSize = $true
+        $form.Controls.Add($statusLabel)
+
+        $progressBar = New-Object System.Windows.Forms.ProgressBar
+        $progressBar.Location = New-Object System.Drawing.Point(20, 105)
+        $progressBar.Size = New-Object System.Drawing.Size(480, 28)
+        $progressBar.Style = "Continuous"
+        $progressBar.Value = 0
+        $progressBar.Minimum = 0
+        $progressBar.Maximum = 100
+        $progressBar.BackColor = [System.Drawing.Color]::FromArgb(40, 45, 70)
+        $progressBar.ForeColor = [System.Drawing.Color]::FromArgb(0, 230, 118)
+        $form.Controls.Add($progressBar)
+
+        $percentLabel = New-Object System.Windows.Forms.Label
+        $percentLabel.Text = "0%"
+        $percentLabel.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+        $percentLabel.ForeColor = [System.Drawing.Color]::FromArgb(0, 230, 118)
+        $percentLabel.Location = New-Object System.Drawing.Point(460, 105)
+        $percentLabel.Size = New-Object System.Drawing.Size(45, 28)
+        $percentLabel.TextAlign = "MiddleCenter"
+        $form.Controls.Add($percentLabel)
+
+        $infoLabel = New-Object System.Windows.Forms.Label
+        $infoLabel.Text = "Initializing..."
+        $infoLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+        $infoLabel.ForeColor = [System.Drawing.Color]::FromArgb(180, 200, 230)
+        $infoLabel.Location = New-Object System.Drawing.Point(20, 148)
+        $infoLabel.Size = New-Object System.Drawing.Size(480, 25)
+        $infoLabel.TextAlign = "MiddleCenter"
+        $form.Controls.Add($infoLabel)
+
+        $btnDone = New-Object System.Windows.Forms.Button
+        $btnDone.Text = "✓ Thank You"
+        $btnDone.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+        $btnDone.Size = New-Object System.Drawing.Size(140, 42)
+        $btnDone.Location = New-Object System.Drawing.Point(190, 195)
+        $btnDone.BackColor = [System.Drawing.Color]::FromArgb(0, 180, 100)
+        $btnDone.ForeColor = [System.Drawing.Color]::White
+        $btnDone.FlatStyle = "Flat"
+        $btnDone.Cursor = [System.Windows.Forms.Cursors]::Hand
+        $btnDone.Visible = $false
+        $btnDone.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 210, 120) })
+        $btnDone.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 180, 100) })
+        $btnDone.Add_Click({ $form.Close() })
+        $form.Controls.Add($btnDone)
+
+        $btnCancel = New-Object System.Windows.Forms.Button
+        $btnCancel.Text = "✕ Cancel"
+        $btnCancel.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+        $btnCancel.Size = New-Object System.Drawing.Size(100, 35)
+        $btnCancel.Location = New-Object System.Drawing.Point(400, 195)
+        $btnCancel.BackColor = [System.Drawing.Color]::FromArgb(80, 40, 40)
+        $btnCancel.ForeColor = [System.Drawing.Color]::White
+        $btnCancel.FlatStyle = "Flat"
+        $btnCancel.Cursor = [System.Windows.Forms.Cursors]::Hand
+        $btnCancel.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(110, 55, 55) })
+        $btnCancel.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(80, 40, 40) })
+        $btnCancel.Add_Click({
+            try { $Process.Kill() } catch {}
+            $form.Close()
+        })
+        $form.Controls.Add($btnCancel)
+
+        $timer = New-Object System.Windows.Forms.Timer
+        $timer.Interval = 200
+        $currentProgress = 0
+
+        $timer.Add_Tick({
+            try {
+                if ($Process.HasExited) {
+                    $timer.Stop()
+                    $progressBar.Value = 100
+                    $percentLabel.Text = "100%"
+                    $statusLabel.Text = "✓ COMPLETE"
+                    $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(0, 230, 118)
+                    $infoLabel.Text = "Repair completed successfully!"
+                    $btnDone.Visible = $true
+                    $btnCancel.Visible = $false
+                    $form.Size = New-Object System.Drawing.Size(520, 280)
+                    return
+                }
+
+                if ($currentProgress -lt 95) {
+                    $currentProgress += 1
+                    if ($currentProgress -le 20) {
+                        $infoLabel.Text = "Initializing licensing services..."
+                    } elseif ($currentProgress -le 40) {
+                        $infoLabel.Text = "Installing repair key..."
+                    } elseif ($currentProgress -le 60) {
+                        $infoLabel.Text = "Generating repair ticket..."
+                    } elseif ($currentProgress -le 80) {
+                        $infoLabel.Text = "Applying repair ticket..."
+                    } else {
+                        $infoLabel.Text = "Activating license..."
+                    }
+                } else {
+                    $infoLabel.Text = "Finalizing..."
+                }
+
+                $progressBar.Value = $currentProgress
+                $percentLabel.Text = "$currentProgress%"
+            } catch {}
+        })
+
+        $timer.Start()
+        $form.ShowDialog()
         
-        $success = Invoke-Download -Url $script:GITHUB_RAW -OutputPath $TempBat
-        
-        if (-not $success -or -not (Test-Path $TempBat)) {
-            Show-ErrorDialog -ErrorCode "SC-ERR-002" -Message "Failed to download repair modules." -Details "Please check your internet connection and try again."
-            Enable-Buttons -BtnStart $BtnStart -BtnSupport $BtnSupport -BtnExit $BtnExit
-            return
-        }
-        
-        Update-UI -Form $Form -ProgressBar $ProgressBar -PercentLabel $PercentLabel -StatusLabel $StatusLabel -ProgressLabel $ProgressLabel -Percent 30 -Status "Running repair tool..."
-        
-        $process = Start-Process -FilePath "cmd.exe" -ArgumentList "/c `"$TempBat`"" -WindowStyle Hidden -PassThru
-        
-        $steps = @(
-            @{Percent = 40; Status = "Initializing licensing services..."},
-            @{Percent = 55; Status = "Installing repair key..."},
-            @{Percent = 70; Status = "Generating repair ticket..."},
-            @{Percent = 85; Status = "Applying repair ticket..."},
-            @{Percent = 95; Status = "Activating license..."}
-        )
-        
-        $stepIndex = 0
-        $timeoutSeconds = 300  # 5 minute timeout
-        $elapsedSeconds = 0
-        
-        while (-not $process.HasExited -and $stepIndex -lt $steps.Count -and $elapsedSeconds -lt $timeoutSeconds) {
-            if ($stepIndex -lt $steps.Count) {
-                Update-UI -Form $Form -ProgressBar $ProgressBar -PercentLabel $PercentLabel -StatusLabel $StatusLabel -ProgressLabel $ProgressLabel -Percent $steps[$stepIndex].Percent -Status $steps[$stepIndex].Status
-                $stepIndex++
-            }
-            Start-Sleep -Milliseconds 500
-            $elapsedSeconds += 0.5
-        }
-        
-        if (-not $process.HasExited) {
-            try { $process.Kill() } catch {}
-            Show-ErrorDialog -ErrorCode "SC-ERR-004" -Message "Repair process timed out after 5 minutes." -Details "Please try again or contact support if the issue persists."
-            Enable-Buttons -BtnStart $BtnStart -BtnSupport $BtnSupport -BtnExit $BtnExit
-            return
-        }
-        
-        $process.WaitForExit()
-        
-        Update-UI -Form $Form -ProgressBar $ProgressBar -PercentLabel $PercentLabel -StatusLabel $StatusLabel -ProgressLabel $ProgressLabel -Percent 100 -Status "Repair complete!"
-        
-        if ($process.ExitCode -eq 0) {
-            Show-ResultDialog -ExitCode 0
-        } else {
-            Show-ResultDialog -ExitCode $process.ExitCode
-        }
-        
+        try { $timer.Stop() } catch {}
+
     } catch {
-        Show-ErrorDialog -ErrorCode "SC-ERR-005" -Message "An unexpected error occurred during repair." -Details $_.Exception.Message
-    } finally {
-        Remove-BatchFile -Path $TempBat
-        Enable-Buttons -BtnStart $BtnStart -BtnSupport $BtnSupport -BtnExit $BtnExit
+        try { $Process.WaitForExit() } catch {}
     }
-}
-
-# ============================================================
-# UI UPDATE HELPER
-# ============================================================
-function Update-UI {
-    param(
-        [System.Windows.Forms.Form]$Form,
-        [System.Windows.Forms.ProgressBar]$ProgressBar,
-        [System.Windows.Forms.Label]$PercentLabel,
-        [System.Windows.Forms.Label]$StatusLabel,
-        [System.Windows.Forms.Label]$ProgressLabel,
-        [int]$Percent,
-        [string]$Status
-    )
-    
-    if ($Form -and -not $Form.IsDisposed) {
-        try {
-            if ($ProgressBar) { $ProgressBar.Value = $Percent }
-            if ($PercentLabel) { $PercentLabel.Text = "$Percent%" }
-            if ($StatusLabel) { $StatusLabel.Text = "[*] $Status" }
-            if ($ProgressLabel) { $ProgressLabel.Text = $Status }
-            [System.Windows.Forms.Application]::DoEvents()
-        } catch {}
-    }
-}
-
-# ============================================================
-# ENABLE/DISABLE BUTTONS
-# ============================================================
-function Enable-Buttons {
-    param(
-        [System.Windows.Forms.Button]$BtnStart,
-        [System.Windows.Forms.Button]$BtnSupport,
-        [System.Windows.Forms.Button]$BtnExit
-    )
-    try {
-        if ($BtnStart) { $BtnStart.Enabled = $true }
-        if ($BtnSupport) { $BtnSupport.Enabled = $true }
-        if ($BtnExit) { $BtnExit.Enabled = $true }
-    } catch {}
-}
-
-function Disable-Buttons {
-    param(
-        [System.Windows.Forms.Button]$BtnStart,
-        [System.Windows.Forms.Button]$BtnSupport,
-        [System.Windows.Forms.Button]$BtnExit
-    )
-    try {
-        if ($BtnStart) { $BtnStart.Enabled = $false }
-        if ($BtnSupport) { $BtnSupport.Enabled = $false }
-        if ($BtnExit) { $BtnExit.Enabled = $false }
-    } catch {}
 }
 
 # ============================================================
@@ -399,20 +413,20 @@ function Show-ResultDialog {
     
     try {
         $form = New-Object System.Windows.Forms.Form
-        $form.Text = "ShaneCodes - Repair Complete"
+        $form.Text = "ShaneCodes – Repair Complete"
         $form.Size = New-Object System.Drawing.Size(480, 280)
         $form.StartPosition = "CenterScreen"
         $form.FormBorderStyle = "FixedSingle"
         $form.MaximizeBox = $false
         $form.MinimizeBox = $false
-        $form.BackColor = [System.Drawing.Color]::FromArgb(10, 12, 30)
+        $form.BackColor = [System.Drawing.Color]::FromArgb(15, 18, 35)
         $form.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
         $form.TopMost = $true
 
         $header = New-Object System.Windows.Forms.Panel
         $header.Dock = "Top"
         $header.Height = 55
-        $header.BackColor = if ($ExitCode -eq 0) { [System.Drawing.Color]::FromArgb(0, 150, 80) } else { [System.Drawing.Color]::FromArgb(180, 40, 40) }
+        $header.BackColor = if ($ExitCode -eq 0) { [System.Drawing.Color]::FromArgb(0, 130, 80) } else { [System.Drawing.Color]::FromArgb(180, 50, 50) }
         $form.Controls.Add($header)
 
         $title = New-Object System.Windows.Forms.Label
@@ -433,13 +447,13 @@ function Show-ResultDialog {
 
         $iconLabel = New-Object System.Windows.Forms.Label
         if ($ExitCode -eq 0) {
-            $iconLabel.Text = "[OK]"
-            $iconLabel.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 200)
+            $iconLabel.Text = "✓"
+            $iconLabel.ForeColor = [System.Drawing.Color]::FromArgb(0, 230, 118)
         } else {
-            $iconLabel.Text = "[X]"
-            $iconLabel.ForeColor = [System.Drawing.Color]::FromArgb(255, 100, 100)
+            $iconLabel.Text = "✗"
+            $iconLabel.ForeColor = [System.Drawing.Color]::FromArgb(255, 80, 80)
         }
-        $iconLabel.Font = New-Object System.Drawing.Font("Segoe UI", 36, [System.Drawing.FontStyle]::Bold)
+        $iconLabel.Font = New-Object System.Drawing.Font("Segoe UI", 48, [System.Drawing.FontStyle]::Bold)
         $iconLabel.Location = New-Object System.Drawing.Point(45, 80)
         $iconLabel.Size = New-Object System.Drawing.Size(80, 70)
         $iconLabel.TextAlign = "MiddleCenter"
@@ -448,10 +462,10 @@ function Show-ResultDialog {
         $msg = New-Object System.Windows.Forms.Label
         if ($ExitCode -eq 0) {
             $msg.Text = "REPAIR COMPLETE"
-            $msg.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 200)
+            $msg.ForeColor = [System.Drawing.Color]::FromArgb(0, 230, 118)
         } else {
             $msg.Text = "REPAIR FAILED"
-            $msg.ForeColor = [System.Drawing.Color]::FromArgb(255, 100, 100)
+            $msg.ForeColor = [System.Drawing.Color]::FromArgb(255, 80, 80)
         }
         $msg.Font = New-Object System.Drawing.Font("Segoe UI", 16, [System.Drawing.FontStyle]::Bold)
         $msg.Location = New-Object System.Drawing.Point(135, 85)
@@ -462,30 +476,30 @@ function Show-ResultDialog {
         if ($ExitCode -eq 0) {
             $sub.Text = "Your system has been successfully repaired."
         } else {
-            $sub.Text = "Error Code: SC-ERR-005. Please contact support."
+            $sub.Text = "Please try running as Administrator or contact support."
         }
         $sub.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
-        $sub.ForeColor = [System.Drawing.Color]::FromArgb(180, 180, 220)
+        $sub.ForeColor = [System.Drawing.Color]::FromArgb(180, 200, 230)
         $sub.Location = New-Object System.Drawing.Point(135, 115)
         $sub.AutoSize = $true
         $form.Controls.Add($sub)
 
         $btn = New-Object System.Windows.Forms.Button
-        $btn.Text = "[OK] THANK YOU"
+        $btn.Text = "✓ Thank You"
         $btn.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
         $btn.Size = New-Object System.Drawing.Size(160, 42)
         $btn.Location = New-Object System.Drawing.Point(160, 185)
-        $btn.BackColor = [System.Drawing.Color]::FromArgb(0, 200, 150)
-        $btn.ForeColor = [System.Drawing.Color]::FromArgb(0, 0, 0)
+        $btn.BackColor = [System.Drawing.Color]::FromArgb(0, 180, 100)
+        $btn.ForeColor = [System.Drawing.Color]::White
         $btn.FlatStyle = "Flat"
         $btn.Cursor = [System.Windows.Forms.Cursors]::Hand
-        $btn.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 255, 200) })
-        $btn.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 200, 150) })
+        $btn.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 210, 120) })
+        $btn.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 180, 100) })
         $btn.Add_Click({ $form.Close() })
         $form.Controls.Add($btn)
 
         $copyright = New-Object System.Windows.Forms.Label
-        $copyright.Text = $script:COPYRIGHT
+        $copyright.Text = $script:Copyright
         $copyright.Font = New-Object System.Drawing.Font("Segoe UI", 7.5)
         $copyright.ForeColor = [System.Drawing.Color]::FromArgb(80, 80, 120)
         $copyright.Location = New-Object System.Drawing.Point(0, 250)
@@ -495,224 +509,169 @@ function Show-ResultDialog {
 
         $form.ShowDialog()
     } catch {
-        [System.Windows.Forms.MessageBox]::Show("Repair completed (Exit Code: $ExitCode)", "Result", "OK", [System.Windows.Forms.MessageBoxIcon]::Information)
+        Show-MessageBox "Repair completed (Exit Code: $ExitCode)" "Result" "Information"
     }
 }
 
 # ============================================================
-# SUPPORT DIALOG
+# START REPAIR – DOWNLOAD + RUN + DELETE
 # ============================================================
-function Show-ContactDialog {
+function Start-RepairTool {
+    $tempBatch = Join-Path $env:TEMP "ShaneRepair_$(Get-Random).bat"
+    
     try {
-        $form = New-Object System.Windows.Forms.Form
-        $form.Text = "ShaneCodes - Support"
-        $form.Size = New-Object System.Drawing.Size(520, 300)
-        $form.StartPosition = "CenterScreen"
-        $form.FormBorderStyle = "FixedSingle"
-        $form.MaximizeBox = $false
-        $form.MinimizeBox = $false
-        $form.BackColor = [System.Drawing.Color]::FromArgb(10, 12, 30)
-        $form.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
-        $form.TopMost = $true
-
-        $header = New-Object System.Windows.Forms.Panel
-        $header.Dock = "Top"
-        $header.Height = 55
-        $header.BackColor = [System.Drawing.Color]::FromArgb(0, 80, 170)
-        $form.Controls.Add($header)
-
-        $title = New-Object System.Windows.Forms.Label
-        $title.Text = "SHANECODES"
-        $title.Font = New-Object System.Drawing.Font("Segoe UI", 18, [System.Drawing.FontStyle]::Bold)
-        $title.ForeColor = [System.Drawing.Color]::White
-        $title.Location = New-Object System.Drawing.Point(15, 10)
-        $title.AutoSize = $true
-        $header.Controls.Add($title)
-
-        $subHead = New-Object System.Windows.Forms.Label
-        $subHead.Text = "Support Center"
-        $subHead.Font = New-Object System.Drawing.Font("Segoe UI", 9)
-        $subHead.ForeColor = [System.Drawing.Color]::FromArgb(200, 220, 255)
-        $subHead.Location = New-Object System.Drawing.Point(17, 33)
-        $subHead.AutoSize = $true
-        $header.Controls.Add($subHead)
-
-        $msg = New-Object System.Windows.Forms.Label
-        $msg.Text = "Contact ShaneCodes Support`n`n$($script:CONTACT)"
-        $msg.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
-        $msg.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 200)
-        $msg.Location = New-Object System.Drawing.Point(40, 80)
-        $msg.Size = New-Object System.Drawing.Size(440, 120)
-        $msg.TextAlign = "MiddleCenter"
-        $form.Controls.Add($msg)
-
-        $btn = New-Object System.Windows.Forms.Button
-        $btn.Text = "[OK] THANK YOU"
-        $btn.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
-        $btn.Size = New-Object System.Drawing.Size(140, 42)
-        $btn.Location = New-Object System.Drawing.Point(190, 220)
-        $btn.BackColor = [System.Drawing.Color]::FromArgb(0, 200, 150)
-        $btn.ForeColor = [System.Drawing.Color]::FromArgb(0, 0, 0)
-        $btn.FlatStyle = "Flat"
-        $btn.Cursor = [System.Windows.Forms.Cursors]::Hand
-        $btn.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 255, 200) })
-        $btn.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 200, 150) })
-        $btn.Add_Click({ $form.Close() })
-        $form.Controls.Add($btn)
-
-        $form.ShowDialog()
+        Show-MessageBox "Downloading repair modules...`n`nPlease wait while the tool downloads the required files." "ShaneCodes" "Information"
+        
+        $success = Download-RepairTool -Url $script:GitHubRaw -OutputPath $tempBatch
+        
+        if (-not $success -or -not (Test-Path $tempBatch)) {
+            Show-ContactSupportDialog
+            return
+        }
+        
+        $process = Start-Process -FilePath "cmd.exe" -ArgumentList "/c `"$tempBatch`"" -WindowStyle Hidden -PassThru
+        Show-ProgressWindow -Process $process -BatchPath $tempBatch
+        Show-ResultDialog $process.ExitCode
+        
     } catch {
-        [System.Windows.Forms.MessageBox]::Show("Contact: $($script:CONTACT)", "Support", "OK", [System.Windows.Forms.MessageBoxIcon]::Information)
+        Show-MessageBox "An error occurred while running the repair tool.`n`nError: $($_.Exception.Message)" "Error" "Error"
+    } finally {
+        Delete-BatchFile -Path $tempBatch
     }
 }
 
 # ============================================================
-# MAIN GUI - NEON STYLE (NON-BLOCKING)
+# CONSOLE FALLBACK
 # ============================================================
-function Show-NeonGUI {
+function Show-ConsoleFallback {
+    Write-Host ""
+    Write-Host "============================================================" -ForegroundColor Cyan
+    Write-Host " SHANECODES – SYSTEM REPAIR TOOL v$script:Version" -ForegroundColor Cyan
+    Write-Host " Created by: Shane Nichael Obinguar" -ForegroundColor Cyan
+    Write-Host "============================================================" -ForegroundColor Cyan
+    Write-Host ""
+    
+    Write-Host "[*] Downloading repair modules..." -ForegroundColor Yellow
+    $tempBatch = Join-Path $env:TEMP "ShaneRepair_$(Get-Random).bat"
+    
+    $success = Download-RepairTool -Url $script:GitHubRaw -OutputPath $tempBatch
+    
+    if (-not $success -or -not (Test-Path $tempBatch)) {
+        Write-Host "[ERROR] Failed to download repair modules." -ForegroundColor Red
+        Write-Host "Contact: $script:Contact" -ForegroundColor Cyan
+        Read-Host "`nPress Enter to exit"
+        return
+    }
+    
+    Write-Host "[*] Running repair tool..." -ForegroundColor Yellow
+    $process = Start-Process -FilePath "cmd.exe" -ArgumentList "/c `"$tempBatch`"" -Wait -NoNewWindow
+    
+    if ($process.ExitCode -eq 0) {
+        Write-Host "[✓] Repair completed successfully!" -ForegroundColor Green
+    } else {
+        Write-Host "[✗] Repair failed. Exit Code: $($process.ExitCode)" -ForegroundColor Red
+        Write-Host "Contact: $script:Contact" -ForegroundColor Cyan
+    }
+    
+    Delete-BatchFile -Path $tempBatch
+    
+    Write-Host ""
+    Write-Host $script:Copyright -ForegroundColor Gray
+    Write-Host ""
+    Read-Host "Press Enter to exit"
+}
+
+# ============================================================
+# MAIN GUI – POGING DESIGN (Modernized)
+# ============================================================
+function Show-MainGUI {
     try {
         $form = New-Object System.Windows.Forms.Form
-        $form.Text = "SHANECODES REPAIR - NEON EDITION v$($script:VERSION)"
-        $form.Size = New-Object System.Drawing.Size(700, 520)
+        $form.Text = "ShaneCodes – System Repair Tool v$script:Version"
+        $form.Size = New-Object System.Drawing.Size(600, 440)
         $form.StartPosition = "CenterScreen"
         $form.FormBorderStyle = "FixedSingle"
         $form.MaximizeBox = $false
         $form.MinimizeBox = $true
-        $form.BackColor = [System.Drawing.Color]::FromArgb(10, 12, 30)
+        $form.BackColor = [System.Drawing.Color]::FromArgb(15, 18, 35)
         $form.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
-        $form.Opacity = 0.95
         $form.TopMost = $true
 
-        $inner = New-Object System.Windows.Forms.Panel
-        $inner.Dock = "Fill"
-        $inner.BackColor = [System.Drawing.Color]::FromArgb(10, 12, 30)
-        $form.Controls.Add($inner)
-
+        # ===== HEADER =====
         $header = New-Object System.Windows.Forms.Panel
         $header.Dock = "Top"
         $header.Height = 110
-        $header.BackColor = [System.Drawing.Color]::FromArgb(10, 12, 30)
-        $inner.Controls.Add($header)
+        $header.BackColor = [System.Drawing.Color]::FromArgb(0, 70, 150)
+        $form.Controls.Add($header)
+
+        $logoPanel = New-Object System.Windows.Forms.Panel
+        $logoPanel.Size = New-Object System.Drawing.Size(65, 65)
+        $logoPanel.Location = New-Object System.Drawing.Point(25, 22)
+        $logoPanel.BackColor = [System.Drawing.Color]::FromArgb(0, 180, 219)
+        
+        $logoLabel = New-Object System.Windows.Forms.Label
+        $logoLabel.Text = "SC"
+        $logoLabel.Font = New-Object System.Drawing.Font("Segoe UI", 22, [System.Drawing.FontStyle]::Bold)
+        $logoLabel.ForeColor = [System.Drawing.Color]::White
+        $logoLabel.Location = New-Object System.Drawing.Point(5, 10)
+        $logoLabel.Size = New-Object System.Drawing.Size(55, 45)
+        $logoLabel.TextAlign = "MiddleCenter"
+        $logoPanel.Controls.Add($logoLabel)
+        $header.Controls.Add($logoPanel)
 
         $title = New-Object System.Windows.Forms.Label
         $title.Text = "SHANECODES"
-        $title.Font = New-Object System.Drawing.Font("Segoe UI", 32, [System.Drawing.FontStyle]::Bold)
-        $title.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 200)
-        $title.Location = New-Object System.Drawing.Point(25, 20)
+        $title.Font = New-Object System.Drawing.Font("Segoe UI", 28, [System.Drawing.FontStyle]::Bold)
+        $title.ForeColor = [System.Drawing.Color]::White
+        $title.Location = New-Object System.Drawing.Point(105, 15)
         $title.AutoSize = $true
         $header.Controls.Add($title)
 
         $sub = New-Object System.Windows.Forms.Label
-        $sub.Text = "SYSTEM REPAIR - NEON EDITION"
-        $sub.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
-        $sub.ForeColor = [System.Drawing.Color]::FromArgb(150, 150, 255)
-        $sub.Location = New-Object System.Drawing.Point(28, 60)
+        $sub.Text = "System Repair Tool • Enterprise Edition"
+        $sub.Font = New-Object System.Drawing.Font("Segoe UI", 11)
+        $sub.ForeColor = [System.Drawing.Color]::FromArgb(200, 220, 255)
+        $sub.Location = New-Object System.Drawing.Point(107, 55)
         $sub.AutoSize = $true
         $header.Controls.Add($sub)
 
         $versionBadge = New-Object System.Windows.Forms.Label
-        $versionBadge.Text = " v$($script:VERSION) "
+        $versionBadge.Text = " v$script:Version "
         $versionBadge.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
-        $versionBadge.ForeColor = [System.Drawing.Color]::FromArgb(0, 0, 0)
-        $versionBadge.BackColor = [System.Drawing.Color]::FromArgb(0, 255, 200)
+        $versionBadge.ForeColor = [System.Drawing.Color]::White
+        $versionBadge.BackColor = [System.Drawing.Color]::FromArgb(0, 180, 100)
         $versionBadge.Size = New-Object System.Drawing.Size(80, 30)
-        $versionBadge.Location = New-Object System.Drawing.Point(590, 25)
+        $versionBadge.Location = New-Object System.Drawing.Point(500, 15)
         $versionBadge.TextAlign = "MiddleCenter"
         $header.Controls.Add($versionBadge)
 
+        $statusBadge = New-Object System.Windows.Forms.Label
+        $statusBadge.Text = "● READY"
+        $statusBadge.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+        $statusBadge.ForeColor = [System.Drawing.Color]::FromArgb(0, 230, 118)
+        $statusBadge.BackColor = [System.Drawing.Color]::FromArgb(0, 230, 118, 15)
+        $statusBadge.Size = New-Object System.Drawing.Size(110, 28)
+        $statusBadge.Location = New-Object System.Drawing.Point(470, 60)
+        $statusBadge.TextAlign = "MiddleCenter"
+        $header.Controls.Add($statusBadge)
+
+        # Glow Line
         $glowLine = New-Object System.Windows.Forms.Label
-        $glowLine.Text = "============================================================"
-        $glowLine.Font = New-Object System.Drawing.Font("Segoe UI", 9)
-        $glowLine.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 200, 50)
+        $glowLine.Text = "════════════════════════════════════════════════════════════════════"
+        $glowLine.Font = New-Object System.Drawing.Font("Segoe UI", 8)
+        $glowLine.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 200, 40)
         $glowLine.Location = New-Object System.Drawing.Point(0, 100)
-        $glowLine.Size = New-Object System.Drawing.Size(700, 15)
+        $glowLine.Size = New-Object System.Drawing.Size(600, 15)
         $glowLine.TextAlign = "MiddleCenter"
         $header.Controls.Add($glowLine)
 
-        $statusPanel = New-Object System.Windows.Forms.Panel
-        $statusPanel.Location = New-Object System.Drawing.Point(25, 130)
-        $statusPanel.Size = New-Object System.Drawing.Size(650, 45)
-        $statusPanel.BackColor = [System.Drawing.Color]::FromArgb(15, 18, 45)
-        $statusPanel.BorderStyle = "FixedSingle"
-        $inner.Controls.Add($statusPanel)
-
-        $statusDot = New-Object System.Windows.Forms.Label
-        $statusDot.Text = "[O]"
-        $statusDot.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
-        $statusDot.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 100)
-        $statusDot.Location = New-Object System.Drawing.Point(15, 10)
-        $statusDot.Size = New-Object System.Drawing.Size(40, 30)
-        $statusDot.TextAlign = "MiddleCenter"
-        $statusPanel.Controls.Add($statusDot)
-
-        $statusLabel = New-Object System.Windows.Forms.Label
-        $statusLabel.Text = "SYSTEM READY"
-        $statusLabel.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
-        $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 200)
-        $statusLabel.Location = New-Object System.Drawing.Point(55, 10)
-        $statusLabel.AutoSize = $true
-        $statusPanel.Controls.Add($statusLabel)
-
-        $sysInfo = New-Object System.Windows.Forms.Label
-        $sysInfo.Text = "[Windows] [64-bit] [Online]"
-        $sysInfo.Font = New-Object System.Drawing.Font("Segoe UI", 9)
-        $sysInfo.ForeColor = [System.Drawing.Color]::FromArgb(150, 150, 200)
-        $sysInfo.Location = New-Object System.Drawing.Point(450, 12)
-        $sysInfo.AutoSize = $true
-        $statusPanel.Controls.Add($sysInfo)
-
-        $progressPanel = New-Object System.Windows.Forms.Panel
-        $progressPanel.Location = New-Object System.Drawing.Point(25, 195)
-        $progressPanel.Size = New-Object System.Drawing.Size(650, 55)
-        $progressPanel.BackColor = [System.Drawing.Color]::FromArgb(15, 18, 45)
-        $progressPanel.BorderStyle = "FixedSingle"
-        $inner.Controls.Add($progressPanel)
-
-        $progressLabel = New-Object System.Windows.Forms.Label
-        $progressLabel.Name = "progressLabel"
-        $progressLabel.Text = "Initializing..."
-        $progressLabel.Font = New-Object System.Drawing.Font("Segoe UI", 10)
-        $progressLabel.ForeColor = [System.Drawing.Color]::FromArgb(200, 200, 255)
-        $progressLabel.Location = New-Object System.Drawing.Point(15, 8)
-        $progressLabel.AutoSize = $true
-        $progressPanel.Controls.Add($progressLabel)
-
-        $progressBar = New-Object System.Windows.Forms.ProgressBar
-        $progressBar.Name = "progressBar"
-        $progressBar.Location = New-Object System.Drawing.Point(15, 32)
-        $progressBar.Size = New-Object System.Drawing.Size(620, 18)
-        $progressBar.Style = "Continuous"
-        $progressBar.Value = 0
-        $progressBar.Minimum = 0
-        $progressBar.Maximum = 100
-        $progressBar.BackColor = [System.Drawing.Color]::FromArgb(20, 25, 55)
-        $progressBar.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 200)
-        $progressPanel.Controls.Add($progressBar)
-
-        $percentLabel = New-Object System.Windows.Forms.Label
-        $percentLabel.Name = "percentLabel"
-        $percentLabel.Text = "0%"
-        $percentLabel.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
-        $percentLabel.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 200)
-        $percentLabel.Location = New-Object System.Drawing.Point(595, 30)
-        $percentLabel.Size = New-Object System.Drawing.Size(40, 20)
-        $percentLabel.TextAlign = "MiddleCenter"
-        $progressPanel.Controls.Add($percentLabel)
-
-        $infoPanel = New-Object System.Windows.Forms.Panel
-        $infoPanel.Location = New-Object System.Drawing.Point(25, 265)
-        $infoPanel.Size = New-Object System.Drawing.Size(650, 90)
-        $infoPanel.BackColor = [System.Drawing.Color]::FromArgb(15, 18, 45)
-        $infoPanel.BorderStyle = "FixedSingle"
-        $inner.Controls.Add($infoPanel)
-
-        $infoTitle = New-Object System.Windows.Forms.Label
-        $infoTitle.Text = "[+] SYSTEM DIAGNOSTICS"
-        $infoTitle.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
-        $infoTitle.ForeColor = [System.Drawing.Color]::FromArgb(100, 200, 255)
-        $infoTitle.Location = New-Object System.Drawing.Point(15, 8)
-        $infoTitle.AutoSize = $true
-        $infoPanel.Controls.Add($infoTitle)
+        # ===== INFO PANEL =====
+        $info = New-Object System.Windows.Forms.Panel
+        $info.Location = New-Object System.Drawing.Point(25, 130)
+        $info.Size = New-Object System.Drawing.Size(550, 75)
+        $info.BackColor = [System.Drawing.Color]::FromArgb(25, 30, 50)
+        $info.BorderStyle = "FixedSingle"
+        $form.Controls.Add($info)
 
         $sysData = Get-SystemInfo
         $infoLines = @(
@@ -721,141 +680,93 @@ function Show-NeonGUI {
             "RAM: $($sysData.RAM) GB  |  User: $($sysData.User)"
         )
 
-        $infoText = New-Object System.Windows.Forms.Label
-        $infoText.Text = $infoLines -join "`n"
-        $infoText.Font = New-Object System.Drawing.Font("Segoe UI", 9)
-        $infoText.ForeColor = [System.Drawing.Color]::FromArgb(180, 180, 220)
-        $infoText.Location = New-Object System.Drawing.Point(15, 28)
-        $infoText.Size = New-Object System.Drawing.Size(620, 50)
-        $infoPanel.Controls.Add($infoText)
+        $lblInfo = New-Object System.Windows.Forms.Label
+        $lblInfo.Text = $infoLines -join "`n"
+        $lblInfo.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+        $lblInfo.ForeColor = [System.Drawing.Color]::FromArgb(180, 200, 230)
+        $lblInfo.Location = New-Object System.Drawing.Point(15, 10)
+        $lblInfo.Size = New-Object System.Drawing.Size(520, 55)
+        $info.Controls.Add($lblInfo)
 
+        # ===== BUTTONS =====
         $btnStart = New-Object System.Windows.Forms.Button
-        $btnStart.Text = "[>] START REPAIR"
+        $btnStart.Text = "⚡ START REPAIR"
         $btnStart.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
-        $btnStart.Size = New-Object System.Drawing.Size(200, 50)
-        $btnStart.Location = New-Object System.Drawing.Point(25, 375)
-        $btnStart.BackColor = [System.Drawing.Color]::FromArgb(0, 200, 150)
-        $btnStart.ForeColor = [System.Drawing.Color]::FromArgb(0, 0, 0)
+        $btnStart.Size = New-Object System.Drawing.Size(240, 55)
+        $btnStart.Location = New-Object System.Drawing.Point(25, 230)
+        $btnStart.BackColor = [System.Drawing.Color]::FromArgb(0, 180, 100)
+        $btnStart.ForeColor = [System.Drawing.Color]::White
         $btnStart.FlatStyle = "Flat"
         $btnStart.Cursor = [System.Windows.Forms.Cursors]::Hand
-        $btnStart.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 255, 200) })
-        $btnStart.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 200, 150) })
+        $btnStart.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 210, 120) })
+        $btnStart.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 180, 100) })
         $btnStart.Add_Click({
-            Disable-Buttons -BtnStart $btnStart -BtnSupport $btnSupport -BtnExit $btnExit
-            $tempBat = [System.IO.Path]::GetTempFileName() + ".bat"
-            $tempBat = $tempBat -replace ".tmp", ".bat"
-            Start-RepairBackground -TempBat $tempBat -Form $form -ProgressBar $progressBar -PercentLabel $percentLabel -StatusLabel $statusLabel -ProgressLabel $progressLabel -BtnStart $btnStart -BtnSupport $btnSupport -BtnExit $btnExit
+            $form.Close()
+            Start-RepairTool
         })
-        $inner.Controls.Add($btnStart)
+        $form.Controls.Add($btnStart)
+
+        $btnCheck = New-Object System.Windows.Forms.Button
+        $btnCheck.Text = "🔍 SYSTEM CHECK"
+        $btnCheck.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+        $btnCheck.Size = New-Object System.Drawing.Size(160, 55)
+        $btnCheck.Location = New-Object System.Drawing.Point(280, 230)
+        $btnCheck.BackColor = [System.Drawing.Color]::FromArgb(40, 80, 120)
+        $btnCheck.ForeColor = [System.Drawing.Color]::White
+        $btnCheck.FlatStyle = "Flat"
+        $btnCheck.Cursor = [System.Windows.Forms.Cursors]::Hand
+        $btnCheck.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(60, 110, 160) })
+        $btnCheck.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(40, 80, 120) })
+        $btnCheck.Add_Click({
+            $sysData2 = Get-SystemInfo
+            Show-MessageBox "System Check Complete`n`nOS: $($sysData2.OS)`nCPU: $($sysData2.CPU)`nRAM: $($sysData2.RAM) GB`nUser: $($sysData2.User)" "System Check" "Information"
+        })
+        $form.Controls.Add($btnCheck)
 
         $btnSupport = New-Object System.Windows.Forms.Button
-        $btnSupport.Text = "[?] SUPPORT"
-        $btnSupport.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
-        $btnSupport.Size = New-Object System.Drawing.Size(160, 50)
-        $btnSupport.Location = New-Object System.Drawing.Point(240, 375)
-        $btnSupport.BackColor = [System.Drawing.Color]::FromArgb(40, 40, 100)
-        $btnSupport.ForeColor = [System.Drawing.Color]::FromArgb(200, 200, 255)
+        $btnSupport.Text = "📧 SUPPORT"
+        $btnSupport.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+        $btnSupport.Size = New-Object System.Drawing.Size(120, 55)
+        $btnSupport.Location = New-Object System.Drawing.Point(455, 230)
+        $btnSupport.BackColor = [System.Drawing.Color]::FromArgb(60, 40, 80)
+        $btnSupport.ForeColor = [System.Drawing.Color]::White
         $btnSupport.FlatStyle = "Flat"
         $btnSupport.Cursor = [System.Windows.Forms.Cursors]::Hand
-        $btnSupport.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(60, 60, 140) })
-        $btnSupport.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(40, 40, 100) })
-        $btnSupport.Add_Click({ Show-ContactDialog })
-        $inner.Controls.Add($btnSupport)
+        $btnSupport.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(80, 55, 110) })
+        $btnSupport.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(60, 40, 80) })
+        $btnSupport.Add_Click({
+            Show-ContactSupportDialog
+        })
+        $form.Controls.Add($btnSupport)
 
         $btnExit = New-Object System.Windows.Forms.Button
-        $btnExit.Text = "[X] EXIT"
-        $btnExit.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
-        $btnExit.Size = New-Object System.Drawing.Size(120, 50)
-        $btnExit.Location = New-Object System.Drawing.Point(415, 375)
-        $btnExit.BackColor = [System.Drawing.Color]::FromArgb(80, 30, 30)
-        $btnExit.ForeColor = [System.Drawing.Color]::FromArgb(255, 150, 150)
+        $btnExit.Text = "✕ EXIT"
+        $btnExit.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+        $btnExit.Size = New-Object System.Drawing.Size(100, 55)
+        $btnExit.Location = New-Object System.Drawing.Point(455, 300)
+        $btnExit.BackColor = [System.Drawing.Color]::FromArgb(80, 40, 40)
+        $btnExit.ForeColor = [System.Drawing.Color]::White
         $btnExit.FlatStyle = "Flat"
         $btnExit.Cursor = [System.Windows.Forms.Cursors]::Hand
-        $btnExit.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(110, 45, 45) })
-        $btnExit.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(80, 30, 30) })
+        $btnExit.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(110, 55, 55) })
+        $btnExit.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(80, 40, 40) })
         $btnExit.Add_Click({ $form.Close() })
-        $inner.Controls.Add($btnExit)
+        $form.Controls.Add($btnExit)
 
+        # ===== FOOTER =====
         $footer = New-Object System.Windows.Forms.Label
-        $footer.Text = $script:COPYRIGHT
+        $footer.Text = $script:Copyright
         $footer.Font = New-Object System.Drawing.Font("Segoe UI", 8)
         $footer.ForeColor = [System.Drawing.Color]::FromArgb(80, 80, 120)
-        $footer.Location = New-Object System.Drawing.Point(0, 490)
-        $footer.Size = New-Object System.Drawing.Size(700, 20)
+        $footer.Location = New-Object System.Drawing.Point(0, 410)
+        $footer.Size = New-Object System.Drawing.Size(600, 20)
         $footer.TextAlign = "MiddleCenter"
-        $inner.Controls.Add($footer)
-
-        $glowTimer = New-Object System.Windows.Forms.Timer
-        $glowTimer.Interval = 500
-        $glowToggle = $true
-        $glowTimer.Add_Tick({
-            $glowToggle = -not $glowToggle
-            if ($glowToggle) {
-                $title.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 200)
-                $statusDot.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 100)
-            } else {
-                $title.ForeColor = [System.Drawing.Color]::FromArgb(0, 200, 150)
-                $statusDot.ForeColor = [System.Drawing.Color]::FromArgb(0, 200, 80)
-            }
-        })
-        $glowTimer.Start()
+        $form.Controls.Add($footer)
 
         $form.ShowDialog()
-        $glowTimer.Stop()
-
     } catch {
         Show-ConsoleFallback
     }
-}
-
-# ============================================================
-# CONSOLE FALLBACK
-# ============================================================
-function Show-ConsoleFallback {
-    Clear-Host
-    Write-Host ""
-    Write-Host "  +--------------------------------------------------------+" -ForegroundColor Cyan
-    Write-Host "  |  SHANECODES REPAIR - NEON EDITION v$($script:VERSION)  |" -ForegroundColor Cyan
-    Write-Host "  |  $($script:AUTHOR)                                      |" -ForegroundColor Gray
-    Write-Host "  +--------------------------------------------------------+" -ForegroundColor Cyan
-    Write-Host ""
-    
-    $sysInfo = Get-SystemInfo
-    Write-Host "  [SYSTEM DIAGNOSTICS]" -ForegroundColor Yellow
-    Write-Host "  OS    : $($sysInfo.OS) Build $($sysInfo.Build)" -ForegroundColor Gray
-    Write-Host "  CPU   : $($sysInfo.CPU)" -ForegroundColor Gray
-    Write-Host "  RAM   : $($sysInfo.RAM) GB" -ForegroundColor Gray
-    Write-Host "  USER  : $($sysInfo.User) @ $($sysInfo.Computer)" -ForegroundColor Gray
-    Write-Host ""
-    
-    Write-Host "  [*] Downloading repair modules..." -ForegroundColor Yellow
-    $tempBat = [System.IO.Path]::GetTempFileName() + ".bat"
-    $tempBat = $tempBat -replace ".tmp", ".bat"
-    
-    $success = Invoke-Download -Url $script:GITHUB_RAW -OutputPath $tempBat
-    
-    if (-not $success -or -not (Test-Path $tempBat)) {
-        Write-Host "  [X] Download failed. Please check your internet connection." -ForegroundColor Red
-        Write-Host "  Contact: $($script:CONTACT)" -ForegroundColor Cyan
-        Read-Host "`nPress Enter to exit"
-        return
-    }
-    
-    Write-Host "  [*] Running repair tool..." -ForegroundColor Yellow
-    $process = Start-Process -FilePath "cmd.exe" -ArgumentList "/c `"$tempBat`"" -WindowStyle Hidden -PassThru -Wait
-    
-    Remove-BatchFile -Path $tempBat
-    
-    if ($process.ExitCode -eq 0) {
-        Write-Host "  [OK] Repair completed successfully!" -ForegroundColor Green
-    } else {
-        Write-Host "  [X] Repair failed. Exit Code: $($process.ExitCode)" -ForegroundColor Red
-        Write-Host "  Contact: $($script:CONTACT)" -ForegroundColor Cyan
-    }
-    
-    Write-Host ""
-    Write-Host "  $($script:COPYRIGHT)" -ForegroundColor DarkGray
-    Read-Host "`nPress Enter to exit"
 }
 
 # ============================================================
@@ -864,13 +775,8 @@ function Show-ConsoleFallback {
 try {
     if (-not (Test-Admin)) {
         try {
-            $result = [System.Windows.Forms.MessageBox]::Show(
-                "Administrator privileges are required.`n`nRelaunch as Administrator?",
-                "Elevation Required",
-                "YesNo",
-                [System.Windows.Forms.MessageBoxIcon]::Warning
-            )
-            if ($result -eq "Yes") {
+            $result = Show-MessageBox "Administrator privileges are required.`n`nRelaunch as Administrator?" "Elevation Required" "Warning"
+            if ($result -eq "OK") {
                 $scriptPath = if ($MyInvocation.MyCommand.Path) { $MyInvocation.MyCommand.Path } else { $MyInvocation.InvocationName }
                 Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`"" -Verb RunAs
             }
@@ -881,7 +787,7 @@ try {
         exit
     }
 
-    Show-NeonGUI
+    Show-MainGUI
 } catch {
     Show-ConsoleFallback
 }
