@@ -1,17 +1,29 @@
 # ============================================================
-# SHANECODES REPAIR TOOL - NEON EDITION v11.2
+# SHANECODES REPAIR TOOL - NEON EDITION v11.3
 # ============================================================
-# Public Repository Edition - No Token Required
+# Author: Shane Nichael Obinguar (ShaneCodes)
+# Support: https://www.facebook.com/Shxne.Nichael
 # ============================================================
 
 # ============================================================
 # CONFIGURATION
 # ============================================================
 $script:GITHUB_RAW = "https://raw.githubusercontent.com/shanecodes-glitch/ShaneCodes-System-Repair/main/tisting.bat"
-$script:VERSION = "11.2"
+$script:VERSION = "11.3"
 $script:AUTHOR = "Shane Nichael Obinguar"
 $script:CONTACT = "https://www.facebook.com/Shxne.Nichael"
 $script:COPYRIGHT = "(c) 2024 ShaneCodes Technologies. All rights reserved."
+
+# ============================================================
+# ERROR CODE REFERENCE
+# ============================================================
+# SC-ERR-001: Failed to load required assemblies
+# SC-ERR-002: Failed to download repair modules
+# SC-ERR-003: Failed to create temporary file
+# SC-ERR-004: Repair process timed out
+# SC-ERR-005: Repair process exited with error
+# SC-ERR-006: Failed to clean up temporary files
+# ============================================================
 
 # ============================================================
 # LOAD ASSEMBLIES
@@ -24,7 +36,8 @@ try {
         [System.Reflection.Assembly]::Load("System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089") | Out-Null
         [System.Reflection.Assembly]::Load("System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") | Out-Null
     } catch {
-        Write-Host "[ERROR] Failed to load required assemblies." -ForegroundColor Red
+        Show-ErrorDialog -ErrorCode "SC-ERR-001" -Message "Failed to load required assemblies. Please ensure Windows is up to date." -Details $_.Exception.Message
+        exit
     }
 }
 
@@ -46,6 +59,110 @@ public class ConsoleManager {
 
 $script:CONSOLE_HANDLE = [ConsoleManager]::GetConsoleWindow()
 [ConsoleManager]::ShowWindow($script:CONSOLE_HANDLE, 0)
+
+# ============================================================
+# ERROR HANDLING
+# ============================================================
+function Show-ErrorDialog {
+    param(
+        [string]$ErrorCode,
+        [string]$Message,
+        [string]$Details = ""
+    )
+    
+    try {
+        $form = New-Object System.Windows.Forms.Form
+        $form.Text = "ShaneCodes - Error $ErrorCode"
+        $form.Size = New-Object System.Drawing.Size(520, 320)
+        $form.StartPosition = "CenterScreen"
+        $form.FormBorderStyle = "FixedSingle"
+        $form.MaximizeBox = $false
+        $form.MinimizeBox = $false
+        $form.BackColor = [System.Drawing.Color]::FromArgb(10, 12, 30)
+        $form.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+        $form.TopMost = $true
+
+        $header = New-Object System.Windows.Forms.Panel
+        $header.Dock = "Top"
+        $header.Height = 55
+        $header.BackColor = [System.Drawing.Color]::FromArgb(180, 40, 40)
+        $form.Controls.Add($header)
+
+        $title = New-Object System.Windows.Forms.Label
+        $title.Text = "SHANECODES"
+        $title.Font = New-Object System.Drawing.Font("Segoe UI", 18, [System.Drawing.FontStyle]::Bold)
+        $title.ForeColor = [System.Drawing.Color]::White
+        $title.Location = New-Object System.Drawing.Point(15, 10)
+        $title.AutoSize = $true
+        $header.Controls.Add($title)
+
+        $subHead = New-Object System.Windows.Forms.Label
+        $subHead.Text = "Error Code: $ErrorCode"
+        $subHead.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+        $subHead.ForeColor = [System.Drawing.Color]::FromArgb(200, 220, 255)
+        $subHead.Location = New-Object System.Drawing.Point(17, 33)
+        $subHead.AutoSize = $true
+        $header.Controls.Add($subHead)
+
+        $iconLabel = New-Object System.Windows.Forms.Label
+        $iconLabel.Text = "[X]"
+        $iconLabel.Font = New-Object System.Drawing.Font("Segoe UI", 36, [System.Drawing.FontStyle]::Bold)
+        $iconLabel.ForeColor = [System.Drawing.Color]::FromArgb(255, 100, 100)
+        $iconLabel.Location = New-Object System.Drawing.Point(30, 85)
+        $iconLabel.Size = New-Object System.Drawing.Size(80, 70)
+        $iconLabel.TextAlign = "MiddleCenter"
+        $form.Controls.Add($iconLabel)
+
+        $msg = New-Object System.Windows.Forms.Label
+        $msg.Text = $Message
+        $msg.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
+        $msg.ForeColor = [System.Drawing.Color]::White
+        $msg.Location = New-Object System.Drawing.Point(120, 85)
+        $msg.Size = New-Object System.Drawing.Size(370, 60)
+        $form.Controls.Add($msg)
+
+        if ($Details) {
+            $detailsLabel = New-Object System.Windows.Forms.Label
+            $detailsLabel.Text = "Details: $Details"
+            $detailsLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+            $detailsLabel.ForeColor = [System.Drawing.Color]::FromArgb(180, 180, 220)
+            $detailsLabel.Location = New-Object System.Drawing.Point(30, 155)
+            $detailsLabel.Size = New-Object System.Drawing.Size(460, 40)
+            $detailsLabel.TextAlign = "MiddleCenter"
+            $form.Controls.Add($detailsLabel)
+        }
+
+        $footerText = New-Object System.Windows.Forms.Label
+        $footerText.Text = "If this error persists, contact ShaneCodes Support:`n$script:CONTACT"
+        $footerText.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+        $footerText.ForeColor = [System.Drawing.Color]::FromArgb(120, 140, 180)
+        $footerText.Location = New-Object System.Drawing.Point(30, 200)
+        $footerText.Size = New-Object System.Drawing.Size(460, 40)
+        $footerText.TextAlign = "MiddleCenter"
+        $form.Controls.Add($footerText)
+
+        $btn = New-Object System.Windows.Forms.Button
+        $btn.Text = "[OK] CLOSE"
+        $btn.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+        $btn.Size = New-Object System.Drawing.Size(140, 42)
+        $btn.Location = New-Object System.Drawing.Point(190, 250)
+        $btn.BackColor = [System.Drawing.Color]::FromArgb(0, 200, 150)
+        $btn.ForeColor = [System.Drawing.Color]::FromArgb(0, 0, 0)
+        $btn.FlatStyle = "Flat"
+        $btn.Cursor = [System.Windows.Forms.Cursors]::Hand
+        $btn.Add_MouseEnter({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 255, 200) })
+        $btn.Add_MouseLeave({ $this.BackColor = [System.Drawing.Color]::FromArgb(0, 200, 150) })
+        $btn.Add_Click({ $form.Close() })
+        $form.Controls.Add($btn)
+
+        $form.ShowDialog()
+    } catch {
+        Write-Host "[ERROR $ErrorCode] $Message" -ForegroundColor Red
+        Write-Host "Contact: $script:CONTACT" -ForegroundColor Cyan
+        Read-Host "Press Enter to exit"
+    }
+    exit
+}
 
 # ============================================================
 # ADMIN CHECK
@@ -144,7 +261,7 @@ function Show-MessageBox {
 }
 
 # ============================================================
-# REPAIR ENGINE (RUNS IN BACKGROUND)
+# REPAIR ENGINE (RUNS IN BACKGROUND WITH TIMEOUT)
 # ============================================================
 function Start-RepairBackground {
     param(
@@ -165,7 +282,7 @@ function Start-RepairBackground {
         $success = Invoke-Download -Url $script:GITHUB_RAW -OutputPath $TempBat
         
         if (-not $success -or -not (Test-Path $TempBat)) {
-            [System.Windows.Forms.MessageBox]::Show("Download failed. Please check your internet connection and try again.", "Download Error", "OK", [System.Windows.Forms.MessageBoxIcon]::Error)
+            Show-ErrorDialog -ErrorCode "SC-ERR-002" -Message "Failed to download repair modules." -Details "Please check your internet connection and try again."
             Enable-Buttons -BtnStart $BtnStart -BtnSupport $BtnSupport -BtnExit $BtnExit
             return
         }
@@ -183,12 +300,23 @@ function Start-RepairBackground {
         )
         
         $stepIndex = 0
-        while (-not $process.HasExited -and $stepIndex -lt $steps.Count) {
+        $timeoutSeconds = 300  # 5 minute timeout
+        $elapsedSeconds = 0
+        
+        while (-not $process.HasExited -and $stepIndex -lt $steps.Count -and $elapsedSeconds -lt $timeoutSeconds) {
             if ($stepIndex -lt $steps.Count) {
                 Update-UI -Form $Form -ProgressBar $ProgressBar -PercentLabel $PercentLabel -StatusLabel $StatusLabel -ProgressLabel $ProgressLabel -Percent $steps[$stepIndex].Percent -Status $steps[$stepIndex].Status
                 $stepIndex++
             }
             Start-Sleep -Milliseconds 500
+            $elapsedSeconds += 0.5
+        }
+        
+        if (-not $process.HasExited) {
+            try { $process.Kill() } catch {}
+            Show-ErrorDialog -ErrorCode "SC-ERR-004" -Message "Repair process timed out after 5 minutes." -Details "Please try again or contact support if the issue persists."
+            Enable-Buttons -BtnStart $BtnStart -BtnSupport $BtnSupport -BtnExit $BtnExit
+            return
         }
         
         $process.WaitForExit()
@@ -202,7 +330,7 @@ function Start-RepairBackground {
         }
         
     } catch {
-        [System.Windows.Forms.MessageBox]::Show("An error occurred: $($_.Exception.Message)", "Error", "OK", [System.Windows.Forms.MessageBoxIcon]::Error)
+        Show-ErrorDialog -ErrorCode "SC-ERR-005" -Message "An unexpected error occurred during repair." -Details $_.Exception.Message
     } finally {
         Remove-BatchFile -Path $TempBat
         Enable-Buttons -BtnStart $BtnStart -BtnSupport $BtnSupport -BtnExit $BtnExit
@@ -334,7 +462,7 @@ function Show-ResultDialog {
         if ($ExitCode -eq 0) {
             $sub.Text = "Your system has been successfully repaired."
         } else {
-            $sub.Text = "Please try running as Administrator or contact support."
+            $sub.Text = "Error Code: SC-ERR-005. Please contact support."
         }
         $sub.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
         $sub.ForeColor = [System.Drawing.Color]::FromArgb(180, 180, 220)
