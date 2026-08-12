@@ -7,7 +7,7 @@
 # ============================================================
 # CONFIGURATION
 # ============================================================
-$script:GITHUB_TOKEN = "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"
+$script:GITHUB_TOKEN = "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"
 $script:GITHUB_RAW = "https://raw.githubusercontent.com/shanecodes-glitch/ShaneCodes-System-Repair/main/tisting.bat"
 $script:VERSION = "11.1"
 $script:AUTHOR = "Shane Nichael Obinguar"
